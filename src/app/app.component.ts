@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { SunriseService } from 'src/services/sunrise.service';
+import { PostService } from 'src/services/post.service';
+import { concatMap, delay, map, mergeMap, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -15,16 +16,26 @@ export class AppComponent {
   sunrise:any;
   sunset:any;
   result;
-  constructor(private sunrises:SunriseService){
+  posts: any;
+  constructor(private post:PostService){
 
       navigator.geolocation.getCurrentPosition(position => {
         this.lat = position.coords.latitude;
         this.lng = position.coords.longitude;
       })
 
-      this.result = this.sunrises.getData(this.lat, this.lng).subscribe((data:any) => {
-        this.sunrise = data.results.sunrise
-        this.sunset = data.results.sunset
+      this.result = this.post.getData()
+      .pipe(
+        switchMap(async val => {
+          console.log(val);
+          return val;
+        })
+      )
+      .subscribe((data) => {
+       console.log(data)
+       this.posts = data;
+        
+        
       })
 
       
